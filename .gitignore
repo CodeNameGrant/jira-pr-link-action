@@ -1,18 +1,78 @@
-# Build and Release Folders
-bin-debug/
-bin-release/
-[Oo]bj/
-[Bb]in/
+# Node modules
+node_modules/
 
-# Other files and folders
-.settings/
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Executables
-*.swf
-*.air
-*.ipa
-*.apk
+# Build output
+dist/
+build/
+coverage/
 
-# Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
-# should NOT be excluded as they contain compiler settings and other important
-# information for Eclipse / Flash Builder.
+# Dependency directories
+jspm_packages/
+
+# Optional npm cache directory
+.npm/
+
+# Optional eslint cache
+.eslintcache
+
+# dotenv environment files
+.env
+.env.local
+.env.*.local
+
+# VSCode settings
+.vscode/
+
+# Mac system files
+.DS_Store
+
+# Windows system files
+Thumbs.db
+
+# GitHub Actions workflow logs
+*.workflow.log
+
+# TypeScript output
+*.tsbuildinfo
+
+# Test output
+*.test-results.xml
+
+# Parcel cache
+.cache/
+
+# Svelte build
+__sapper__/
+.svelte/
+
+# Next.js build
+.next/
+
+# Nuxt.js build
+.nuxt/
+
+# Gatsby files
+.cache/
+public/
+
+# Storybook build
+out/
+storybook-static/
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Pnpm files
+.pnpm-debug.log
+
+# Misc
+*.tgz
+.idea/
+*.swp

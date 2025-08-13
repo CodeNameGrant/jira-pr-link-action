@@ -1,0 +1,26 @@
+{
+  "name": "jira-pr-link-action",
+  "version": "1.0.0",
+  "description": "GitHub Action to link JIRA tickets in pull requests.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "keywords": [
+    "github-actions",
+    "jira",
+    "pull-request"
+  ],
+  "repository": {
+    "url": "https://github.com/CodeNameGrant/jira-pr-link-action"
+  },
+  "author": {
+    "name": "Grant Walker",
+    "url": "https://github.com/CodeNameGrant"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.10.0",
+    "@actions/github": "^6.0.0"
+  }
+}
