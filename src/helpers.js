@@ -1,13 +1,9 @@
 import * as core from '@actions/core';
 
-// Configuration constants
-const CONFIG = {
-  // Matches: feat(PROJ-123): ... or PROJ-123: ...
-  JIRA_TICKET_REGEX: /\(?([A-Z][A-Z0-9_]*-\d+)\)?/,
-  // Matches existing link in PR body (more forgiving about spaces/URL)
-  JIRA_LINK_LINE_REGEX: /^🔗 Linked to JIRA ticket: \[[A-Z][A-Z0-9_]*-\d+\]\(.+?\)\s*$/m
-};
+// Default JIRA ticket pattern
+const DEFAULT_TICKET_PATTERN = '([A-Z][A-Z0-9_]*-\\d+)';
 
+// Allowed JIRA link modes
 const JIRA_LINK_MODES = ['body-start', 'body-end'];
 
 export function validateEnvironmentVariables() {
@@ -29,7 +25,7 @@ export function validateEnvironmentVariables() {
     throw new Error(`Input "jira-base-url" must be a valid URL. Received: ${jiraBaseUrl}`);
   }
 
-  // Optional input with validation
+  // Read optional inputs
   const jiraLinkMode = core.getInput('jira-link-mode') || 'body-start';
   if (!JIRA_LINK_MODES.includes(jiraLinkMode)) {
     throw new Error(
@@ -40,8 +36,32 @@ export function validateEnvironmentVariables() {
   return { token, jiraBaseUrl, jiraLinkMode };
 }
 
-export function extractJiraTicket(prTitle) {
-  const match = prTitle.match(CONFIG.JIRA_TICKET_REGEX);
+export function getJiraPatterns() {
+  let ticketPattern = DEFAULT_TICKET_PATTERN;
+
+  const issuePatternInput = core.getInput('issue-pattern');
+  if (issuePatternInput) {
+    // If the user regex already has '(', assume they added a capturing group
+    ticketPattern = issuePatternInput.includes('(') ? issuePatternInput : `(${issuePatternInput})`;
+  }
+
+  const JIRA_TICKET_REGEX = new RegExp(ticketPattern);
+
+  // Build the link regex dynamically from ticket pattern
+  const JIRA_LINK_LINE_REGEX = new RegExp(
+    `^🔗 Linked to JIRA ticket: \\[${ticketPattern}\\]\\(.+?\\)\\s*$`,
+    'm'
+  );
+
+  return {
+    JIRA_TICKET_REGEX,
+    JIRA_LINK_LINE_REGEX
+  };
+}
+
+export function extractJiraTicket(text) {
+  const { JIRA_TICKET_REGEX } = getJiraPatterns();
+  const match = text.match(JIRA_TICKET_REGEX);
   return match ? match[1] : null;
 }
 
@@ -50,12 +70,15 @@ export function generateJiraLink(baseUrl, ticket) {
 }
 
 export function removeExistingJiraLink(prBody) {
-  return prBody.replace(CONFIG.JIRA_LINK_LINE_REGEX, '').trim();
+  const { JIRA_LINK_LINE_REGEX } = getJiraPatterns();
+  return prBody.replace(JIRA_LINK_LINE_REGEX, '').trim();
 }
 
 export function updatePRBodyWithJiraLink(prBody, jiraLink, jiraLinkMode) {
-  if (CONFIG.JIRA_LINK_LINE_REGEX.test(prBody)) {
-    return prBody.replace(CONFIG.JIRA_LINK_LINE_REGEX, jiraLink);
+  const { JIRA_LINK_LINE_REGEX } = getJiraPatterns();
+
+  if (JIRA_LINK_LINE_REGEX.test(prBody)) {
+    return prBody.replace(JIRA_LINK_LINE_REGEX, jiraLink);
   }
 
   if (jiraLinkMode === 'body-start') {

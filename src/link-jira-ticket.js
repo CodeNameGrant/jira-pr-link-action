@@ -31,7 +31,6 @@ async function run() {
       return;
     }
 
-    // Fetch PR details
     const { data: pr } = await octokit.rest.pulls.get({ owner, repo, pull_number: prNumber });
     const prTitle = pr.title ?? '';
     const prBody = pr.body ?? '';

@@ -4,13 +4,12 @@ Automatically adds, updates, or removes JIRA ticket links in GitHub pull request
 
 ## Inputs
 
-| Name             | Required | Description                                                                         |
-| ---------------- | -------- | ----------------------------------------------------------------------------------- |
-| `token`          | ✅       | GitHub token, usually `${{ secrets.GITHUB_TOKEN }}`                                 |
-| `repository`     | ✅       | Full Repository Name (owner/repo_name) (e.g., `${{ github.repository }}`)           |
-| `pr-number`      | ✅       | Pull request number (e.g., `${{ github.event.pull_request.number }}`)               |
-| `jira-base-url`  | ✅       | Base JIRA URL (e.g., `https://yourcompany.atlassian.net`)                           |
-| `jira-link-mode` | ❌       | Where to add the JIRA link in the PR body: `"body-start"` (default) or `"body-end"` |
+| Name             | Required | Description                                                                                                                          |
+| ---------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `token`          | ✅       | GitHub token, usually `${{ secrets.GITHUB_TOKEN }}`                                                                                  |
+| `jira-base-url`  | ✅       | Base JIRA URL (e.g., `https://yourcompany.atlassian.net`)                                                                            |
+| `jira-link-mode` | ❌       | Where to add the JIRA link in the PR body: `"body-start"` (default) or `"body-end"`                                                  |
+| `issue-pattern`  | ❌       | Optional custom regex to match JIRA issues. Must include exactly one capturing group for the ticket. Default: ([A-Z][A-Z0-9_]\*-\d+) |
 
 ## JIRA Ticket Format
 
@@ -19,8 +18,6 @@ This action detects JIRA tickets based on standard JIRA issue key formatting:
 
 - **PROJECTKEY** must be 2–10 uppercase letters (A–Z).
 - **NUMBER** must be a positive integer (no leading zeros).
-
-> TODO If your JIRA instance uses non-standard formats, you can provide a custom regex pattern using the `issue-pattern` input.
 
 ## Required Permissions
 

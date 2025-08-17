@@ -23,6 +23,10 @@ inputs:
       - body-start
       - body-end
 
+  issue-pattern:
+    description: 'Custom regex to match JIRA issues (default: "[A-Z]+-\\d+")'
+    required: false
+
 runs:
   using: 'node20'
   main: 'dist/index.js'
