@@ -1,0 +1,28 @@
+name: 'JIRA Link Action'
+description: 'Automatically adds, updates, or removes a JIRA ticket link in a PR based on the PR title.'
+author:
+  name: 'CodeNameGrant'
+branding:
+  icon: 'link'
+  color: 'blue'
+
+inputs:
+  token:
+    description: 'GitHub token (usually secrets.GITHUB_TOKEN)'
+    required: true
+
+  jira_base_url:
+    description: 'Base URL for your JIRA instance (eg: https://yourcompany.atlassian.net)'
+    required: true
+
+  jira_link_mode:
+    description: 'Where to add the JIRA link: body-start, body-end'
+    required: false
+    default: 'body-start'
+    options:
+      - body-start
+      - body-end
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
