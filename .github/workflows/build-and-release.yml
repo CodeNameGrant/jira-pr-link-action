@@ -1,0 +1,38 @@
+name: Build & Release Action
+on:
+  push:
+    tags:
+      - 'v*.*.*' # Trigger only on semantic version tags, e.g., v1.0.0
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Action (esbuild)
+        run: npm run build
+
+      - name: Verify dist folder exists
+        run: ls -l dist
+
+      - name: Create Release
+        id: release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ github.ref_name }}
+          # Include compiled action and metadata
+          files: ['dist/**', 'action.yml', 'README.md', 'LICENSE']
+
+      - name: Output release info
+        run: echo "Release created at ${{ steps.release.outputs.upload_url }}"
