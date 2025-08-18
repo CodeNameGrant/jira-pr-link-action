@@ -1,2 +1,4 @@
-
 node_modules/
+
+# dist contents are compiled from src/index.ts; do NOT commit dist/ to main
+dist/

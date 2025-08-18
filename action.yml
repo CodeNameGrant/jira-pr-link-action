@@ -29,4 +29,5 @@ inputs:
 
 runs:
   using: 'node20'
+  # dist/index.js is compiled from src/index.ts; do NOT commit dist/ to main
   main: 'dist/index.js'
