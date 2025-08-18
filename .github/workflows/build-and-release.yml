@@ -33,7 +33,7 @@ jobs:
         with:
           tag: ${{ github.ref_name }}
           # Include compiled action and metadata
-          artifacts: dist/**,action.yml,README.md,LICENSE
+          artifacts: 'dist/**,action.yml,README.md,LICENSE'
 
       - name: Output release info
         run: echo "Release created at ${{ steps.release.outputs.upload_url }}"
