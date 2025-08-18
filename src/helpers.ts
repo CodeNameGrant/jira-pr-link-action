@@ -1,12 +1,14 @@
 import * as core from '@actions/core';
+import { InputVariables, JiraLinkMode, JiraPatterns, Octokit } from './types';
+import { Context } from '@actions/github/lib/context';
 
 // Default JIRA ticket pattern
 const DEFAULT_TICKET_PATTERN = '([A-Z][A-Z0-9_]*-\\d+)';
 
 // Allowed JIRA link modes
-const JIRA_LINK_MODES = ['body-start', 'body-end'];
+const JIRA_LINK_MODES: JiraLinkMode[] = ['body-start', 'body-end'];
 
-export function validateEnvironmentVariables() {
+export function validateInputVariables(): InputVariables {
   // Read required inputs
   const token = core.getInput('token', { required: true });
   const jiraBaseUrl = core.getInput('jira-base-url', { required: true }).replace(/\/$/, '');
@@ -26,7 +28,7 @@ export function validateEnvironmentVariables() {
   }
 
   // Read optional inputs
-  const jiraLinkMode = core.getInput('jira-link-mode') || 'body-start';
+  const jiraLinkMode = (core.getInput('jira-link-mode') || 'body-start') as JiraLinkMode;
   if (!JIRA_LINK_MODES.includes(jiraLinkMode)) {
     throw new Error(
       `Input 'jira-link-mode' is invalid. Must be one of: ${JIRA_LINK_MODES.join(', ')}`
@@ -36,7 +38,7 @@ export function validateEnvironmentVariables() {
   return { token, jiraBaseUrl, jiraLinkMode };
 }
 
-export function getJiraPatterns() {
+export function getJiraPatterns(): JiraPatterns {
   let ticketPattern = DEFAULT_TICKET_PATTERN;
 
   const issuePatternInput = core.getInput('issue-pattern');
@@ -59,22 +61,26 @@ export function getJiraPatterns() {
   };
 }
 
-export function extractJiraTicket(text) {
+export function extractJiraTicket(text: string): string | null {
   const { JIRA_TICKET_REGEX } = getJiraPatterns();
   const match = text.match(JIRA_TICKET_REGEX);
   return match ? match[1] : null;
 }
 
-export function generateJiraLink(baseUrl, ticket) {
+export function generateJiraLink(baseUrl: string, ticket: string): string {
   return `🔗 Linked to JIRA ticket: [${ticket}](${baseUrl}/browse/${ticket})`;
 }
 
-export function removeExistingJiraLink(prBody) {
+export function removeExistingJiraLink(prBody: string): string {
   const { JIRA_LINK_LINE_REGEX } = getJiraPatterns();
   return prBody.replace(JIRA_LINK_LINE_REGEX, '').trim();
 }
 
-export function updatePRBodyWithJiraLink(prBody, jiraLink, jiraLinkMode) {
+export function updatePRBodyWithJiraLink(
+  prBody: string,
+  jiraLink: string,
+  jiraLinkMode: JiraLinkMode
+): string {
   const { JIRA_LINK_LINE_REGEX } = getJiraPatterns();
 
   if (JIRA_LINK_LINE_REGEX.test(prBody)) {
@@ -92,13 +98,13 @@ export function updatePRBodyWithJiraLink(prBody, jiraLink, jiraLinkMode) {
   throw new Error(`Unsupported JIRA_LINK_MODE: ${jiraLinkMode}`);
 }
 
-export async function handleNoJiraTicket(octokit, context, prBody) {
+export async function handleNoJiraTicket(octokit: Octokit, context: Context, prBody: string) {
   core.info('No JIRA ticket found in PR title.');
   const cleanedBody = removeExistingJiraLink(prBody);
 
   if (cleanedBody !== prBody) {
     const { owner, repo } = context.repo;
-    const prNumber = context.payload.pull_request?.number;
+    const prNumber = context.payload.pull_request?.number as number;
 
     await octokit.rest.pulls.update({ owner, repo, pull_number: prNumber, body: cleanedBody });
     core.info('Removed existing JIRA link from PR description.');
@@ -107,12 +113,18 @@ export async function handleNoJiraTicket(octokit, context, prBody) {
   return;
 }
 
-export async function handleJiraTicketFound(octokit, context, prBody, jiraLink, jiraLinkMode) {
+export async function handleJiraTicketFound(
+  octokit: Octokit,
+  context: Context,
+  prBody: string,
+  jiraLink: string,
+  jiraLinkMode: JiraLinkMode
+) {
   const newBody = updatePRBodyWithJiraLink(prBody, jiraLink, jiraLinkMode);
 
   if (newBody !== prBody) {
     const { owner, repo } = context.repo;
-    const prNumber = context.payload.pull_request?.number;
+    const prNumber = context.payload.pull_request?.number as number;
 
     await octokit.rest.pulls.update({ owner, repo, pull_number: prNumber, body: newBody });
 

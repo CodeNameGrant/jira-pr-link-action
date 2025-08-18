@@ -5,10 +5,10 @@ import {
   generateJiraLink,
   handleJiraTicketFound,
   handleNoJiraTicket,
-  validateEnvironmentVariables
+  validateInputVariables
 } from './helpers';
 
-async function run() {
+async function run(): Promise<void> {
   try {
     if (github.context.eventName !== 'pull_request') {
       core.setFailed(
@@ -18,7 +18,7 @@ async function run() {
     }
 
     // Get required inputs
-    const { token, jiraBaseUrl, jiraLinkMode } = validateEnvironmentVariables();
+    const { token, jiraBaseUrl, jiraLinkMode } = validateInputVariables();
 
     // Initialize Octokit using @actions/github
     const octokit = github.getOctokit(token);
@@ -46,8 +46,12 @@ async function run() {
     } else {
       await handleNoJiraTicket(octokit, github.context, prBody);
     }
-  } catch (error) {
-    core.setFailed(`Error managing JIRA link: ${error.message}`);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      core.setFailed(error.message);
+    } else {
+      core.setFailed(String(error));
+    }
   }
 }
 

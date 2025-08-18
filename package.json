@@ -4,7 +4,9 @@
   "description": "GitHub Action to link JIRA tickets in pull requests.",
   "main": "src/link-jira-ticket.js",
   "scripts": {
-    "build": "npx esbuild src/link-jira-ticket.js --bundle --platform=node --outfile=dist/index.js"
+    "build": "npm run typecheck && npm run bundle",
+    "bundle": "esbuild src/index.ts --bundle --platform=node --target=node20 --outfile=dist/index.js",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [
     "github-actions",
@@ -25,6 +27,8 @@
     "@octokit/rest": "^22.0.0"
   },
   "devDependencies": {
-    "esbuild": "^0.25.9"
+    "@types/node": "^24.3.0",
+    "esbuild": "^0.25.9",
+    "typescript": "^5.9.2"
   }
 }
