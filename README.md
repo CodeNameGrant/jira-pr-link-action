@@ -50,5 +50,5 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           jira-base-url: 'https://yourcompany.atlassian.net'
           jira-link-mode: 'body-start'
-          issue-pattern: '(PROJECT-\d+)'
+          issue-pattern: '(MyProject-\d+)'
 ```
