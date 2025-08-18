@@ -47,10 +47,8 @@ jobs:
     steps:
       - uses: codenamegrant/jira-pr-link-action@v1
         with:
-          jira-base-url: 'https://yourcompany.atlassian.net'
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          pr-number: ${{ github.event.pull_request.number }}
-          github-owner: ${{ github.repository_owner }}
-          github-repo: ${{ github.event.repository.name }}
-          jira-link-mode: body-start
+          jira-base-url: 'https://yourcompany.atlassian.net'
+          jira-link-mode: 'body-start'
+          issue-pattern: '(PROJECT-\d+)'
 ```
