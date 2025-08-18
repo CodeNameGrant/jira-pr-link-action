@@ -10,6 +10,7 @@ import {
 
 async function run(): Promise<void> {
   try {
+    // Ensure the action only runs on pull_request events
     if (github.context.eventName !== 'pull_request') {
       core.setFailed(
         `This action only supports the 'pull_request' event. Received: '${github.context.eventName}'`
@@ -17,10 +18,10 @@ async function run(): Promise<void> {
       return;
     }
 
-    // Get required inputs
+    // Retrieve and validate required inputs
     const { token, jiraBaseUrl, jiraLinkMode } = validateInputVariables();
 
-    // Initialize Octokit using @actions/github
+    // Initialize Octokit client for GitHub API requests
     const octokit = github.getOctokit(token);
 
     // Extract repo/owner and PR number from context
@@ -35,6 +36,7 @@ async function run(): Promise<void> {
     const prTitle = pr.title ?? '';
     const prBody = pr.body ?? '';
 
+    // Attempt to extract JIRA ticket from PR title
     const jiraTicket = extractJiraTicket(prTitle);
 
     if (jiraTicket) {
