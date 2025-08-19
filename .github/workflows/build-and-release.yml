@@ -30,28 +30,13 @@ jobs:
       - name: Verify dist folder exists
         run: ls -l dist
 
-      - name: Set user to github-actions[bot]
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Create temporary release branch
-        run: |
-          git checkout -b release/${{ github.ref_name }}
-          git add -f dist
-          git commit -m "chore: include dist for release ${{ github.ref_name }}"
-          git push origin HEAD
-
       - name: Create Release
         id: release
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ github.ref_name }}
           # Include compiled action and metadata
-          artifacts: 'dist,action.yml,README.md,LICENSE'
-
-      - name: Clean up temporary branch
-        run: git push origin --delete release/${{ github.ref_name }}
+          artifacts: 'dist/**,action.yml,README.md,LICENSE'
 
       - name: Output release info
         run: echo "Release created at ${{ steps.release.outputs.upload_url }}"
