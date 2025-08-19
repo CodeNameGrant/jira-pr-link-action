@@ -1,6 +1,6 @@
 {
   "name": "jira-pr-link-action",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "GitHub Action to link JIRA tickets in pull requests.",
   "main": "src/index.ts",
   "scripts": {
