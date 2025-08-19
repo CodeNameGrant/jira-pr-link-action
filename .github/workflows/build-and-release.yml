@@ -30,13 +30,12 @@ jobs:
       - name: Verify dist folder exists
         run: ls -l dist
 
-      - name: Commit dist to tag
+      - name: Create temporary release branch
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b release/${{ github.ref_name }}
           git add -f dist
-          git commit -m "chore: build dist for ${{ github.ref_name }}" || echo "No changes to commit"
-          git push origin HEAD:${{ github.ref_name }}
+          git commit -m "chore: include dist for release ${{ github.ref_name }}"
+          git push origin HEAD
 
       - name: Create Release
         id: release
@@ -45,6 +44,9 @@ jobs:
           tag: ${{ github.ref_name }}
           # Include compiled action and metadata
           artifacts: 'dist,action.yml,README.md,LICENSE'
+
+      - name: Clean up temporary branch
+        run: git push origin --delete release/${{ github.ref_name }}
 
       - name: Output release info
         run: echo "Release created at ${{ steps.release.outputs.upload_url }}"
