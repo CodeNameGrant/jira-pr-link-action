@@ -21,7 +21,7 @@ const JIRA_LINK_MODES: JiraLinkMode[] = ['body-start', 'body-end'];
  */
 export function validateInputVariables(): InputVariables {
   // Read required inputs
-  const token = core.getInput('token', { required: true });
+  const token = core.getInput('github-token', { required: true });
   const jiraBaseUrl = core.getInput('jira-base-url', { required: true }).replace(/\/$/, '');
 
   if (!token || token === '') {

@@ -7,15 +7,15 @@ branding:
   color: 'blue'
 
 inputs:
-  token:
+  github-token:
     description: 'GitHub token (usually secrets.GITHUB_TOKEN)'
     required: true
 
-  jira_base_url:
+  jira-base-url:
     description: 'Base URL for your JIRA instance (eg: https://yourcompany.atlassian.net)'
     required: true
 
-  jira_link_mode:
+  jira-link-mode:
     description: 'Where to add the JIRA link: body-start, body-end'
     required: false
     default: 'body-start'
