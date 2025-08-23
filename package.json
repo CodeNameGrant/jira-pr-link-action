@@ -6,7 +6,10 @@
   "scripts": {
     "build": "npm run typecheck && npm run bundle",
     "bundle": "esbuild src/index.ts --bundle --platform=node --target=node20 --outfile=dist/index.js",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "version": "node scripts/version.js",
+    "version:minor": "node scripts/version.js minor",
+    "version:major": "node scripts/version.js major"
   },
   "keywords": [
     "github-actions",
