@@ -1,12 +1,15 @@
 {
   "name": "jira-pr-link-action",
-  "version": "0.0.10",
+  "version": "0.0.14",
   "description": "GitHub Action to link JIRA tickets in pull requests.",
   "main": "src/index.ts",
   "scripts": {
     "build": "npm run typecheck && npm run bundle",
     "bundle": "esbuild src/index.ts --bundle --platform=node --target=node20 --outfile=dist/index.js",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "release": "node scripts/release.js",
+    "release:minor": "node scripts/release.js minor",
+    "release:major": "node scripts/release.js major"
   },
   "keywords": [
     "github-actions",
