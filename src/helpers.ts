@@ -141,16 +141,17 @@ export function updatePRBodyWithJiraLink(
 ): string {
   const { JIRA_LINK_LINE_REGEX } = getJiraPatterns();
 
+  let updatedBody = prBody;
   if (JIRA_LINK_LINE_REGEX.test(prBody)) {
-    return prBody.replace(JIRA_LINK_LINE_REGEX, jiraLink);
+    updatedBody = prBody.replace(JIRA_LINK_LINE_REGEX, '');
   }
 
   if (jiraLinkMode === 'body-start') {
-    return `${jiraLink}\n\n${prBody}`.trim();
+    return `${jiraLink}\n\n${updatedBody}`.trim();
   }
 
   if (jiraLinkMode === 'body-end') {
-    return `${prBody}\n\n${jiraLink}`.trim();
+    return `${updatedBody}\n\n${jiraLink}`.trim();
   }
 
   throw new Error(`Unsupported JIRA_LINK_MODE: ${jiraLinkMode}`);
