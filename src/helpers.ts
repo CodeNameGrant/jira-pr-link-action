@@ -141,16 +141,26 @@ export function updatePRBodyWithJiraLink(
 ): string {
   const { JIRA_LINK_LINE_REGEX } = getJiraPatterns();
 
-  if (JIRA_LINK_LINE_REGEX.test(prBody)) {
-    return prBody.replace(JIRA_LINK_LINE_REGEX, jiraLink);
-  }
+  // Ensure we remove every existing link line (not just the first).
+  const stripRegex = new RegExp(
+    JIRA_LINK_LINE_REGEX.source,
+    JIRA_LINK_LINE_REGEX.flags.includes('g')
+      ? JIRA_LINK_LINE_REGEX.flags
+      : JIRA_LINK_LINE_REGEX.flags + 'g'
+  );
 
+  // 1) Remove existing link(s)
+  let body = prBody.replace(stripRegex, '').trim();
+
+  // 2) Normalize excessive blank lines created by removal
+  body = body.replace(/\n{3,}/g, '\n\n');
+
+  // 3) Insert link at desired position
   if (jiraLinkMode === 'body-start') {
-    return `${jiraLink}\n\n${prBody}`.trim();
+    return body ? `${jiraLink}\n\n${body}` : jiraLink;
   }
-
   if (jiraLinkMode === 'body-end') {
-    return `${prBody}\n\n${jiraLink}`.trim();
+    return body ? `${body}\n\n${jiraLink}` : jiraLink;
   }
 
   throw new Error(`Unsupported JIRA_LINK_MODE: ${jiraLinkMode}`);
