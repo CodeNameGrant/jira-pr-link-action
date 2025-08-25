@@ -13,6 +13,7 @@ export interface InputVariables {
 
 // Holds the regular expressions used for JIRA ticket and link detection
 export interface JiraPatterns {
+  JIRA_LINK_LINE_LABEL: string;
   JIRA_TICKET_REGEX: RegExp;
   JIRA_LINK_LINE_REGEX: RegExp;
 }

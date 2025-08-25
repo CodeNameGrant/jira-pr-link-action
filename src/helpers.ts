@@ -5,6 +5,9 @@ import { Context } from '@actions/github/lib/context';
 // Default JIRA ticket pattern
 const DEFAULT_TICKET_PATTERN = '([A-Z][A-Z0-9_]*-\\d+)';
 
+// Label used in the markdown link to JIRA tickets
+const JIRA_LINK_LINE_LABEL = '🔗 Linked to JIRA ticket:';
+
 // Allowed JIRA link modes
 const JIRA_LINK_MODES: JiraLinkMode[] = ['body-start', 'body-end'];
 
@@ -74,11 +77,12 @@ export function getJiraPatterns(): JiraPatterns {
 
   // Build the link regex dynamically from ticket pattern
   const JIRA_LINK_LINE_REGEX = new RegExp(
-    `^🔗 Linked to JIRA ticket: \\[${ticketPattern}\\]\\(.+?\\)\\s*$`,
+    `^${JIRA_LINK_LINE_LABEL} \\[${ticketPattern}\\]\\(.+?\\)\\s*$`,
     'm'
   );
 
   return {
+    JIRA_LINK_LINE_LABEL,
     JIRA_TICKET_REGEX,
     JIRA_LINK_LINE_REGEX
   };
@@ -139,28 +143,21 @@ export function updatePRBodyWithJiraLink(
   jiraLink: string,
   jiraLinkMode: JiraLinkMode
 ): string {
-  const { JIRA_LINK_LINE_REGEX } = getJiraPatterns();
+  const { JIRA_LINK_LINE_LABEL } = getJiraPatterns();
 
-  // Ensure we remove every existing link line (not just the first).
-  const stripRegex = new RegExp(
-    JIRA_LINK_LINE_REGEX.source,
-    JIRA_LINK_LINE_REGEX.flags.includes('g')
-      ? JIRA_LINK_LINE_REGEX.flags
-      : JIRA_LINK_LINE_REGEX.flags + 'g'
-  );
+  // Remove any line that mentions the JIRA link label
+  const cleanedBody = prBody
+    .split('\n')
+    .filter((line) => !line.includes(JIRA_LINK_LINE_LABEL))
+    .join('\n')
+    .trim();
 
-  // 1) Remove existing link(s)
-  let body = prBody.replace(stripRegex, '').trim();
-
-  // 2) Normalize excessive blank lines created by removal
-  body = body.replace(/\n{3,}/g, '\n\n');
-
-  // 3) Insert link at desired position
   if (jiraLinkMode === 'body-start') {
-    return body ? `${jiraLink}\n\n${body}` : jiraLink;
+    return `${jiraLink}\n\n${cleanedBody}`.trim();
   }
+
   if (jiraLinkMode === 'body-end') {
-    return body ? `${body}\n\n${jiraLink}` : jiraLink;
+    return `${cleanedBody}\n\n${jiraLink}`.trim();
   }
 
   throw new Error(`Unsupported JIRA_LINK_MODE: ${jiraLinkMode}`);
